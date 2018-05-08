@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/colorPrimaryDark"
+    tools:context=".home.HomeActivity">
+
+
+    <TextView
+        android:id="@+id/homeTvSelFromGallery"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:drawableTop="@drawable/ic_photo_gray_72dp"
+        android:textColor="#FFFFFF"
+        android:gravity="center"
+        android:foreground="?android:attr/selectableItemBackground"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toLeftOf="@+id/homeTvTakePhoto"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintVertical_bias="0.39"
+        android:text="@string/home_select_from_gallery" />
+
+    <TextView
+        android:id="@+id/homeTvTakePhoto"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:drawableTop="@drawable/ic_photo_camera_gray_72dp"
+        android:textColor="#FFFFFF"
+        android:gravity="center"
+        android:foreground="?android:attr/selectableItemBackground"
+        app:layout_constraintLeft_toRightOf="@id/homeTvSelFromGallery"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintVertical_bias="0.39"
+        android:text="@string/home_take_photo" />
+
+
+</android.support.constraint.ConstraintLayout>

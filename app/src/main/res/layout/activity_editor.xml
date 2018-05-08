@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/colorPrimaryDark"
+    tools:context=".editor.EditorActivity">
+
+
+    <ImageView
+        android:id="@+id/editorIvBack"
+        android:layout_width="60dp"
+        android:layout_height="30dp"
+        android:layout_marginTop="15dp"
+        android:foreground="?android:attr/selectableItemBackground"
+        android:src="@drawable/ic_keyboard_backspace_gray_24dp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageView
+        android:id="@+id/editorIvEraser"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:layout_marginStart="15dp"
+        android:layout_marginTop="15dp"
+        android:foreground="?android:attr/selectableItemBackground"
+        app:layout_constraintLeft_toRightOf="@id/editorIvBack"
+        app:layout_constraintRight_toLeftOf="@+id/editorIvUndo"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/ic_eraser_gray_24dp" />
+
+    <ImageView
+        android:id="@+id/editorIvUndo"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:layout_marginTop="15dp"
+        android:foreground="?android:attr/selectableItemBackground"
+        app:layout_constraintHorizontal_chainStyle="packed"
+        app:layout_constraintLeft_toRightOf="@id/editorIvEraser"
+        app:layout_constraintRight_toLeftOf="@+id/editorIvRedo"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/ic_undo_gray_24dp" />
+
+    <ImageView
+        android:id="@+id/editorIvRedo"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:layout_marginTop="15dp"
+        android:foreground="?android:attr/selectableItemBackground"
+        app:layout_constraintLeft_toRightOf="@id/editorIvUndo"
+        app:layout_constraintRight_toLeftOf="@id/editorIvBackground"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/ic_redo_gray_24dp" />
+
+
+    <ImageView
+        android:id="@+id/editorIvBackground"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:layout_marginTop="15dp"
+        android:layout_marginEnd="15dp"
+        android:foreground="?android:attr/selectableItemBackground"
+        app:layout_constraintLeft_toRightOf="@id/editorIvRedo"
+        app:layout_constraintRight_toLeftOf="@id/editorIvSave"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/ic_photo_library_gray_24dp" />
+
+    <ImageView
+        android:id="@+id/editorIvSave"
+        android:layout_width="60dp"
+        android:layout_height="30dp"
+        android:layout_marginTop="15dp"
+        android:foreground="?android:attr/selectableItemBackground"
+        android:src="@drawable/ic_save_gray_24dp"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <android.support.constraint.Guideline
+        android:id="@+id/top_line"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_begin="60dp" />
+
+
+    <ja.burhanrashid52.photoeditor.PhotoEditorView
+        android:id="@+id/photoEditorView"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:background="@color/colorPrimaryDark"
+        app:layout_constraintBottom_toTopOf="@id/editorRvSegmentation"
+        app:layout_constraintTop_toBottomOf="@id/top_line"
+        app:photo_src="@drawable/rectangle_white" />
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/editorRvBackground"
+        android:background="@color/colorPrimaryDark"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/top_line"
+        android:visibility="gone"
+        android:layout_width="0dp"
+        android:layout_height="80dp" />
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/editorRvSegmentation"
+        android:layout_width="0dp"
+        android:layout_height="80dp"
+        android:background="@color/colorPrimaryDark"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent" />
+
+
+</android.support.constraint.ConstraintLayout>
