@@ -17,8 +17,8 @@ class SegmentationAdapter(
         val imageView = helper.getView<ImageView>(R.id.editor_iv_segmentation)
         GlideApp.with(imageView)
                 .load(item.url)
-                .placeholder(R.mipmap.ic_launcher)
-                .error(R.mipmap.ic_launcher_round)
+                .placeholder(R.drawable.ic_place_holder_gray_24dp)
+                .error(R.drawable.ic_error_gray_24dp)
                 .centerInside()
                 .into(imageView)
     }

@@ -14,8 +14,8 @@ class BackgroundAdapter(@LayoutRes layoutResId: Int, data: MutableList<Backgroun
         val imageView = helper.getView<ImageView>(R.id.editor_iv_background)
         GlideApp.with(imageView)
                 .load(item.res)
-                .placeholder(R.mipmap.ic_launcher)
-                .error(R.mipmap.ic_launcher_round)
+                .placeholder(R.drawable.ic_place_holder_gray_24dp)
+                .error(R.drawable.ic_error_gray_24dp)
                 .centerInside()
                 .into(imageView)
     }

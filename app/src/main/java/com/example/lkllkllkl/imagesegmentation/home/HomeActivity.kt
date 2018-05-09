@@ -10,14 +10,15 @@ import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
 import android.support.v7.app.AppCompatActivity
+import android.view.LayoutInflater
 import android.view.WindowManager
+import android.widget.EditText
 import android.widget.Toast
 import com.example.lkllkllkl.imagesegmentation.R
 import com.example.lkllkllkl.imagesegmentation.data.RetrofitUtils
 import com.example.lkllkllkl.imagesegmentation.data.SegmentationRepository
 import com.example.lkllkllkl.imagesegmentation.utils.UriUtils
 import kotlinx.android.synthetic.main.activity_home.*
-import kotlinx.android.synthetic.main.home_dialog_change_server.*
 import pub.devrel.easypermissions.AfterPermissionGranted
 import pub.devrel.easypermissions.EasyPermissions
 
@@ -29,8 +30,10 @@ class HomeActivity : AppCompatActivity() {
     private val segmentationRepository by lazy { SegmentationRepository() }
     private var segUrl: Int = SegmentationRepository.VOC_SEGMENTATION
     private val changeServerDialog by lazy {
+        val view = LayoutInflater.from(this).inflate(R.layout.home_dialog_change_server, null, false)
+        val homeEtChangeServer = view.findViewById<EditText>(R.id.homeEtChangeServer)
         AlertDialog.Builder(this)
-                .setView(R.layout.home_dialog_change_server)
+                .setView(view)
                 .setPositiveButton("CONFIRM", { _, _ ->
                     val server = homeEtChangeServer.text.toString()
                     RetrofitUtils.BASE_URL = server
@@ -39,6 +42,7 @@ class HomeActivity : AppCompatActivity() {
     private val loadingDialog by lazy {
         val dialog = AlertDialog.Builder(this)
                 .setView(R.layout.home_dialog_loading)
+                .setCancelable(false)
                 .create()
         dialog.window.setLayout(resources.getDimensionPixelOffset(
                 R.dimen.editor_bg_header_width),

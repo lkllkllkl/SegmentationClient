@@ -3,8 +3,8 @@ package com.example.lkllkllkl.imagesegmentation.editor
 import android.Manifest
 import android.annotation.SuppressLint
 import android.app.Activity
+import android.app.AlertDialog
 import android.content.Intent
-import android.graphics.Bitmap
 import android.media.MediaScannerConnection
 import android.os.Bundle
 import android.os.Environment
@@ -13,20 +13,17 @@ import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.DividerItemDecoration
 import android.support.v7.widget.LinearLayoutManager
 import android.view.Gravity
+import android.view.LayoutInflater
 import android.view.View
-import android.widget.ImageView
-import android.widget.LinearLayout
-import android.widget.RelativeLayout
-import android.widget.Toast
-import com.bumptech.glide.request.target.SimpleTarget
-import com.bumptech.glide.request.transition.Transition
+import android.view.WindowManager
+import android.widget.*
 import com.example.lkllkllkl.imagesegmentation.R
 import com.example.lkllkllkl.imagesegmentation.data.BackgroundEntity
 import com.example.lkllkllkl.imagesegmentation.data.SegmentationImageEntity
 import com.example.lkllkllkl.imagesegmentation.home.HomeActivity.Companion.EXTRA_SEGMENTATION_IMG
 import com.example.lkllkllkl.imagesegmentation.utils.GlideApp
 import com.example.lkllkllkl.imagesegmentation.utils.UriUtils
-import ja.burhanrashid52.photoeditor.PhotoEditor
+import com.example.lkllkllkl.photoedit.PhotoEditor
 import kotlinx.android.synthetic.main.activity_editor.*
 import pub.devrel.easypermissions.AfterPermissionGranted
 import pub.devrel.easypermissions.EasyPermissions
@@ -38,13 +35,36 @@ import java.util.*
 class EditorActivity : AppCompatActivity() {
 
     private lateinit var photoEditor: PhotoEditor
+    private val loadingDialog by lazy {
+        val view = LayoutInflater.from(this).inflate(R.layout.home_dialog_loading, null, false)
+        view.findViewById<TextView>(R.id.tv_loading).setText(R.string.editor_saving)
+        val dialog = AlertDialog.Builder(this)
+                .setView(view)
+                .setCancelable(false)
+                .create()
+        dialog.window.setLayout(resources.getDimensionPixelOffset(
+                R.dimen.editor_bg_header_width),
+                WindowManager.LayoutParams.MATCH_PARENT)
+
+        dialog
+    }
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_editor)
         initPhotoEditor()
+
         editorIvBack.setOnClickListener { finish() }
-        editorIvEraser.setOnClickListener { photoEditor.setBrushDrawingMode(!photoEditor.brushDrawableMode) }
+        editorIvEraser.setOnClickListener {
+            if (photoEditor.brushDrawableMode) {
+                editorIvEraser.setImageResource(R.drawable.ic_eraser_gray_24dp)
+                photoEditor.setBrushDrawingMode(false)
+            } else {
+                editorIvEraser.setImageResource(R.drawable.ic_eraser_enable_24dp)
+                photoEditor.brushEraser()
+            }
+        }
         editorIvUndo.setOnClickListener { photoEditor.undo() }
         editorIvRedo.setOnClickListener { photoEditor.redo() }
         editorIvBackground.setOnClickListener { triggerBGRVVisibility() }
@@ -70,10 +90,13 @@ class EditorActivity : AppCompatActivity() {
 
     private val saveListener = object : PhotoEditor.OnSaveListener {
         override fun onFailure(exception: Exception) {
+
+            loadingDialog.dismiss()
             Toast.makeText(this@EditorActivity, "save failure", Toast.LENGTH_SHORT).show()
         }
 
         override fun onSuccess(imagePath: String) {
+            loadingDialog.dismiss()
             Toast.makeText(this@EditorActivity, "save img to $imagePath", Toast.LENGTH_SHORT).show()
             MediaScannerConnection.scanFile(this@EditorActivity, arrayOf(imagePath), null, null)
         }
@@ -92,6 +115,7 @@ class EditorActivity : AppCompatActivity() {
             }
             val imgName = simpleDateFommat.format(System.currentTimeMillis()) + "_seg.png"
             val imgPath = File(photoDir, imgName).absolutePath
+            loadingDialog.show()
             photoEditor.saveImage(imgPath, saveListener)
         } else {
             EasyPermissions.requestPermissions(this,
@@ -107,11 +131,6 @@ class EditorActivity : AppCompatActivity() {
                 if (editorRvBackground.visibility == View.VISIBLE) View.GONE else View.VISIBLE
     }
 
-    private val simpleTarget = object : SimpleTarget<Bitmap>() {
-        override fun onResourceReady(resource: Bitmap, transition: Transition<in Bitmap>?) {
-            photoEditor.addImage(resource)
-        }
-    }
     private val divider by lazy {
         val d = DividerItemDecoration(this, DividerItemDecoration.HORIZONTAL)
         ContextCompat.getDrawable(this, R.drawable.rec_divider)?.let {
@@ -122,16 +141,16 @@ class EditorActivity : AppCompatActivity() {
 
     private fun initSegmentationRv() {
         val segmentations: List<SegmentationImageEntity> = intent.getParcelableArrayListExtra(EXTRA_SEGMENTATION_IMG)
-                ?: emptyList()
+                ?: listOf(SegmentationImageEntity(url = "http://g.hiphotos.baidu.com/image/h%3D300/sign=5313080a0e087bf462ec51e9c2d2575e/37d3d539b6003af37401eb21392ac65c1038b633.jpg"))
         val adapter = SegmentationAdapter(R.layout.editor_item_segmentation, segmentations)
+        val brushView = photoEditorView.brushDrawingView
         adapter.setOnItemClickListener { _, view, position ->
             GlideApp.with(view)
-                    .asBitmap()
                     .load(segmentations[position].url)
-                    .placeholder(R.mipmap.ic_launcher)
-                    .error(R.mipmap.ic_launcher_round)
+                    .placeholder(R.drawable.ic_place_holder_gray_24dp)
+                    .error(R.drawable.ic_error_gray_24dp)
                     .centerInside()
-                    .into(simpleTarget)
+                    .into(brushView)
         }
 
         editorRvSegmentation.adapter = adapter
@@ -186,8 +205,8 @@ class EditorActivity : AppCompatActivity() {
         val req =
                 if (backgroundEntity.res == 0) GlideApp.with(imageView).load(backgroundEntity.path)
                 else GlideApp.with(imageView).load(backgroundEntity.res)
-        req.placeholder(R.mipmap.ic_launcher)
-                .error(R.mipmap.ic_launcher_round)
+        req.placeholder(R.drawable.ic_place_holder_gray_24dp)
+                .error(R.drawable.ic_error_gray_24dp)
                 .centerCrop()
                 .into(imageView)
     }
@@ -199,16 +218,16 @@ class EditorActivity : AppCompatActivity() {
 
     private val backgroundEntities by lazy {
         val entities = ArrayList<BackgroundEntity>(10)
-        entities.add(BackgroundEntity(res = R.drawable.image1))
-        entities.add(BackgroundEntity(res = R.drawable.image1))
-        entities.add(BackgroundEntity(res = R.drawable.image1))
-        entities.add(BackgroundEntity(res = R.drawable.image1))
-        entities.add(BackgroundEntity(res = R.drawable.image1))
-        entities.add(BackgroundEntity(res = R.drawable.image1))
-        entities.add(BackgroundEntity(res = R.drawable.image1))
-        entities.add(BackgroundEntity(res = R.drawable.image1))
-        entities.add(BackgroundEntity(res = R.drawable.image1))
-        entities.add(BackgroundEntity(res = R.drawable.image1))
+        entities.add(BackgroundEntity(res = R.drawable.bg1))
+        entities.add(BackgroundEntity(res = R.drawable.bg2))
+        entities.add(BackgroundEntity(res = R.drawable.bg3))
+        entities.add(BackgroundEntity(res = R.drawable.bg4))
+        entities.add(BackgroundEntity(res = R.drawable.bg5))
+        entities.add(BackgroundEntity(res = R.drawable.bg6))
+        entities.add(BackgroundEntity(res = R.drawable.bg7))
+        entities.add(BackgroundEntity(res = R.drawable.bg8))
+        entities.add(BackgroundEntity(res = R.drawable.bg9))
+        entities.add(BackgroundEntity(res = R.drawable.bg10))
         entities
     }
 
